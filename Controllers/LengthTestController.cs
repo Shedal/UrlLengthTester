@@ -8,11 +8,9 @@ namespace UrlLengthTester.Controllers
     public class LengthTestController : ControllerBase
     {
         [HttpGet]
-        public string Get(string p)
+        public int Get()
         {
-            p ??= string.Empty;
-
-            return $"URL length: {this.Request.GetDisplayUrl().Length}. Parameter length: {p.Length}.";
+            return this.Request.GetDisplayUrl().Length;
         }
     }
 }

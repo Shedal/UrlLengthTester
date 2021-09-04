@@ -11,17 +11,18 @@ export class UrlLengthTester extends Component {
 
   render() {
     let contents =
-      (!!this.state.returnedData && <div><h4>Server-side view:</h4>
-        <div>{this.state.returnedData}</div>
-      </div>) ||
-      (!!this.state.returnedError && <div><h4>Error:</h4>
-        <div>{this.state.returnedError}</div>
-      </div>);
+      (!!this.state.returnedData &&
+        <div className="alert alert-success" role="alert">
+          The server sees a URL with length: <strong>{this.state.returnedData}</strong></div>) ||
+      (!!this.state.returnedError &&
+        <div className="alert alert-danger" role="alert">
+          {this.state.returnedError}</div>);
 
     return (
       <div className="w-50 justify-content-center align-self-center text-white text-center align-middle">
         <div className="pb-3">
-          <Input className="text-center" placeholder="Characters to send" onChange={this.handleInputChange}
+          <Input autoFocus className="text-center" placeholder="Characters to send" value={this.state.charsToSend || ""}
+                 onChange={this.handleInputChange}
                  onKeyDown={this.handleInputKeyDown}/>
         </div>
         <button className="btn btn-block btn-outline-primary px-4 me-sm-3 fw-bold"
@@ -42,7 +43,14 @@ export class UrlLengthTester extends Component {
   sendApiRequest = async () => {
     this.setState({ returnedData: "", returnedError: "" });
 
-    const url = `LengthTest?p=${'a'.repeat(this.state.charsToSend)}`;
+    const location = window.location;
+    const baseUrl = `${location.protocol}//${location.host}/LengthTest?p=`;
+
+    if (this.state.charsToSend < baseUrl.length) {
+      this.state.charsToSend = baseUrl.length;
+    }
+
+    let url = `${baseUrl}${'a'.repeat(this.state.charsToSend - baseUrl.length)}`;
 
     fetch(url)
       .then(response => {
